@@ -102,6 +102,7 @@ h2 {
   object-fit: cover;
   border-radius: 5px;
   flex-shrink: 0;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
 
 .card-content {
