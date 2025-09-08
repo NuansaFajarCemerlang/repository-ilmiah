@@ -45,9 +45,9 @@
   <section class="content" id="daftar-artikel">
     <h2>Daftar Repository Ilmiah</h2>
     <input type="text" id="searchInput" placeholder="Cari judul atau penulis..." class="search-box"
-      onkeyup="filterCards()" />
-    <div id="card-container">
-      <!-- terisi otomastis oleh supabase -->
+      onkeyup="filterBooks()" />
+    <div id="card-container" style="display: flex; flex-direction: column; gap: 20px;">
+      <!-- cards akan muncul di sini -->
     </div>
     <div id="pagination" class="pagination"></div>
   </section>
@@ -112,79 +112,90 @@
       SUPABASE_ANON_KEY
     );
 
-    async function loadBooks() {
-      const { data, error } = await supabaseClient.from("books").select("*");
+    const cardsPerPage = 5;
+    let currentPage = 1;
+    let currentSearchTerm = "";
+
+    async function loadBooks(page = 1, searchTerm = "") {
+      const from = (page - 1) * cardsPerPage;
+      const to = from + cardsPerPage - 1;
+
+      let query = supabaseClient.from("books").select("*").range(from, to);
+
+      // Jika ada pencarian, filter berdasarkan judul dan author (ilustrasi)
+      if (searchTerm.trim() !== "") {
+        query = supabaseClient
+          .from("books")
+          .select("*")
+          .ilike("judul", `%${searchTerm}%`);
+      }
+
+      const { data, error, count } = await query;
+
       if (error) {
         console.error("Error:", error);
         return;
       }
 
+      // Jika pencarian, supabase harus tahu total count dengan exact count
+      // Supabase v2 tidak otomatis hitung total count di query dengan range, jadi kita query ulang untuk hitung total (workaround)
+      let totalItems = 0;
+      if (searchTerm.trim() !== "") {
+        // Hitung total yang cocok pencarian
+        const { count: totalCount, error: countError } = await supabaseClient
+          .from("books")
+          .select("*", { count: "exact", head: true })
+          .ilike("judul", `%${searchTerm}%`);
+
+        if (countError) {
+          console.error("Count error:", countError);
+          totalItems = data.length;
+        } else {
+          totalItems = totalCount;
+        }
+      } else {
+        // Jika tidak pencarian, hitung total keseluruhan buku
+        const { count: totalCount, error: countError } = await supabaseClient
+          .from("books")
+          .select("*", { count: "exact", head: true });
+
+        if (countError) {
+          console.error("Count error:", countError);
+          totalItems = data.length;
+        } else {
+          totalItems = totalCount;
+        }
+      }
+
+      // Render cards
       const container = document.getElementById("card-container");
-      container.innerHTML = "";
+      container.innerHTML = ""; // Kosongkan dulu container
 
       data.forEach((book) => {
         const card = document.createElement("div");
         card.classList.add("card");
         card.innerHTML = `
-        <img src="${book.cover_url}" alt="Cover ${book.judul
-          }" class="cover-img" loading="lazy"/>
-        <div class="card-content">
-          <h3>${book.judul}</h3>
-          <p>Oleh: ${book.author}</p>
-          <a href="${book.file_pdf}" class="btn">Baca Detail</a>
-        </div>
-      `;
+          <img src="${book.cover_url}" alt="Cover ${book.judul}" class="cover-img" loading="lazy" />
+          <div class="card-content">
+            <h3>${book.judul}</h3>
+            <p>Oleh: ${book.author}</p>
+            <a href="${book.file_pdf}" class="btn" target="_blank" rel="noopener noreferrer">Baca Detail</a>
+          </div>
+        `;
         container.appendChild(card);
       });
 
-      allCards = getAllCards();
-      filteredCards = allCards;
-      paginateCards();
+      currentPage = page;
+      currentSearchTerm = searchTerm;
+
+      renderPagination(totalItems);
     }
 
-    window.onload = () => {
-      loadBooks(); // ambil dari Supabase
-    };
-  </script>
-
-  <!-- SCRIPT PAGINATION & SEARCH -->
-  <script>
-    const cardsPerPage = 5;
-    let currentPage = 1;
-    let allCards = [];
-    let filteredCards = [];
-
-    function getAllCards() {
-      const container = document.getElementById("card-container");
-      return Array.from(container.getElementsByClassName("card"));
-    }
-
-    function filterCards() {
-      const input = document.getElementById("searchInput");
-      const filter = input.value.toLowerCase();
-      const cards = getAllCards();
-      filteredCards = cards.filter((card) =>
-        card.textContent.toLowerCase().includes(filter)
-      );
-      currentPage = 1;
-      paginateCards();
-    }
-
-    function paginateCards() {
-      const cards = getAllCards();
-      const totalPages = Math.ceil(filteredCards.length / cardsPerPage);
-      cards.forEach((card) => (card.style.display = "none"));
-      const start = (currentPage - 1) * cardsPerPage;
-      const end = currentPage * cardsPerPage;
-      filteredCards
-        .slice(start, end)
-        .forEach((card) => (card.style.display = "flex"));
-      updatePagination(totalPages);
-    }
-
-    function updatePagination(totalPages) {
+    function renderPagination(totalItems) {
+      const totalPages = Math.ceil(totalItems / cardsPerPage);
       const pagination = document.getElementById("pagination");
       pagination.innerHTML = "";
+
       if (totalPages <= 1) return;
 
       // Tombol Prev
@@ -192,16 +203,14 @@
         const prevBtn = document.createElement("button");
         prevBtn.textContent = "« Prev";
         prevBtn.onclick = () => {
-          currentPage--;
-          paginateCards();
-          document.getElementById("daftar-artikel").scrollIntoView({ behavior: "smooth" });
+          loadBooks(currentPage - 1, currentSearchTerm);
+          scrollToTop();
         };
         pagination.appendChild(prevBtn);
       }
 
       let startPage, endPage;
       if (totalPages <= 5) {
-        // jika total halaman <= 5 tampil semua
         startPage = 1;
         endPage = totalPages;
       } else {
@@ -217,14 +226,12 @@
         }
       }
 
-      // Jika startPage > 1, tambahkan halaman pertama + ...
       if (startPage > 1) {
         const firstBtn = document.createElement("button");
         firstBtn.textContent = "1";
         firstBtn.onclick = () => {
-          currentPage = 1;
-          paginateCards();
-          document.getElementById("daftar-artikel").scrollIntoView({ behavior: "smooth" });
+          loadBooks(1, currentSearchTerm);
+          scrollToTop();
         };
         pagination.appendChild(firstBtn);
 
@@ -235,20 +242,17 @@
         }
       }
 
-      // Halaman dinamis
       for (let i = startPage; i <= endPage; i++) {
         const btn = document.createElement("button");
         btn.textContent = i;
         if (i === currentPage) btn.classList.add("active");
         btn.onclick = () => {
-          currentPage = i;
-          paginateCards();
-          document.getElementById("daftar-artikel").scrollIntoView({ behavior: "smooth" });
+          loadBooks(i, currentSearchTerm);
+          scrollToTop();
         };
         pagination.appendChild(btn);
       }
 
-      // Jika endPage < totalPages, tambahkan ... + halaman terakhir
       if (endPage < totalPages) {
         if (endPage < totalPages - 1) {
           const dots = document.createElement("span");
@@ -258,9 +262,8 @@
         const lastBtn = document.createElement("button");
         lastBtn.textContent = totalPages;
         lastBtn.onclick = () => {
-          currentPage = totalPages;
-          paginateCards();
-          document.getElementById("daftar-artikel").scrollIntoView({ behavior: "smooth" });
+          loadBooks(totalPages, currentSearchTerm);
+          scrollToTop();
         };
         pagination.appendChild(lastBtn);
       }
@@ -270,19 +273,27 @@
         const nextBtn = document.createElement("button");
         nextBtn.textContent = "Next »";
         nextBtn.onclick = () => {
-          currentPage++;
-          paginateCards();
-          document.getElementById("daftar-artikel").scrollIntoView({ behavior: "smooth" });
+          loadBooks(currentPage + 1, currentSearchTerm);
+          scrollToTop();
         };
         pagination.appendChild(nextBtn);
       }
     }
 
-    // window.onload = () => {
-    //   allCards = getAllCards();
-    //   filteredCards = allCards;
-    //   paginateCards();
-    // };
+    function filterBooks() {
+      const input = document.getElementById("searchInput");
+      const searchTerm = input.value.trim();
+      loadBooks(1, searchTerm);
+    }
+
+    function scrollToTop() {
+      document.getElementById("daftar-artikel").scrollIntoView({ behavior: "smooth" });
+    }
+
+    window.onload = () => {
+      loadBooks();
+    };
+
   </script>
 
   <!-- SCRIPT NAVBAR DROPDOWN -->
