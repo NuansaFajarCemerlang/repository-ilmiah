@@ -98,7 +98,7 @@ h2 {
 
 .cover-img {
   width: 120px;
-  height: 160px;
+  height: auto;
   object-fit: cover;
   border-radius: 5px;
   flex-shrink: 0;
