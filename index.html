@@ -121,14 +121,20 @@
       const from = (page - 1) * cardsPerPage;
       const to = from + cardsPerPage - 1;
 
-      let query = supabaseClient.from("books").select("*").range(from, to);
+      let query;
 
-      // Jika ada pencarian, filter berdasarkan judul dan author (ilustrasi)
       if (searchTerm.trim() !== "") {
+        // pencarian tetap dibatasi range
         query = supabaseClient
           .from("books")
-          .select("*")
-          .ilike("judul", `%${searchTerm}%`);
+          .select("*", { count: "exact" }) // 
+          .ilike("judul", `%${searchTerm}%`)
+          .range(from, to);
+      } else {
+        query = supabaseClient
+          .from("books")
+          .select("*", { count: "exact" }) 
+          .range(from, to);
       }
 
       const { data, error, count } = await query;
@@ -138,58 +144,28 @@
         return;
       }
 
-      // Jika pencarian, supabase harus tahu total count dengan exact count
-      // Supabase v2 tidak otomatis hitung total count di query dengan range, jadi kita query ulang untuk hitung total (workaround)
-      let totalItems = 0;
-      if (searchTerm.trim() !== "") {
-        // Hitung total yang cocok pencarian
-        const { count: totalCount, error: countError } = await supabaseClient
-          .from("books")
-          .select("*", { count: "exact", head: true })
-          .ilike("judul", `%${searchTerm}%`);
-
-        if (countError) {
-          console.error("Count error:", countError);
-          totalItems = data.length;
-        } else {
-          totalItems = totalCount;
-        }
-      } else {
-        // Jika tidak pencarian, hitung total keseluruhan buku
-        const { count: totalCount, error: countError } = await supabaseClient
-          .from("books")
-          .select("*", { count: "exact", head: true });
-
-        if (countError) {
-          console.error("Count error:", countError);
-          totalItems = data.length;
-        } else {
-          totalItems = totalCount;
-        }
-      }
-
       // Render cards
       const container = document.getElementById("card-container");
-      container.innerHTML = ""; // Kosongkan dulu container
+      container.innerHTML = "";
 
       data.forEach((book) => {
         const card = document.createElement("div");
         card.classList.add("card");
         card.innerHTML = `
-          <img src="${book.cover_url}" alt="Cover ${book.judul}" class="cover-img" loading="lazy" />
-          <div class="card-content">
-            <h3>${book.judul}</h3>
-            <p>Oleh: ${book.author}</p>
-            <a href="${book.file_pdf}" class="btn">Baca Detail</a>
-          </div>
-        `;
+      <img src="${book.cover_url}" alt="Cover ${book.judul}" class="cover-img" loading="lazy" />
+      <div class="card-content">
+        <h3>${book.judul}</h3>
+        <p>Oleh: ${book.author}</p>
+        <a href="${book.file_pdf}" class="btn">Baca Detail</a>
+      </div>
+    `;
         container.appendChild(card);
       });
 
       currentPage = page;
       currentSearchTerm = searchTerm;
 
-      renderPagination(totalItems);
+      renderPagination(count); 
     }
 
     function renderPagination(totalItems) {
