@@ -128,7 +128,7 @@
         query = supabaseClient
           .from("books")
           .select("*", { count: "exact" }) // 
-          .ilike("judul", `%${searchTerm}%`)
+          .or(`judul.ilike.%${searchTerm}%,author.ilike.%${searchTerm}%`)
           .range(from, to);
       } else {
         query = supabaseClient
