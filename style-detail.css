@@ -1,14 +1,18 @@
-/* GENERAL BODY STYLING */
+/* =========================================
+   GENERAL BODY STYLING
+========================================= */
 body {
   margin: 0;
   font-family: "Roboto", sans-serif;
   background: linear-gradient(rgba(31, 154, 255, 0.6), rgba(42, 149, 255, 0.6)),
-    url("img/bg.jpg") no-repeat center center/cover;
+    url("/img/bg.jpg") no-repeat center center/cover;
   background-attachment: fixed;
   color: #333;
 }
 
-/* NAVBAR */
+/* =========================================
+   NAVBAR
+========================================= */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -58,61 +62,113 @@ body {
   z-index: 1001;
 }
 
-/* DETAIL CONTAINER */
+/* =========================================
+   DETAIL CONTAINER (Desain Dua Kolom)
+========================================= */
 .detail-container {
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 20px;
-  background: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1100px;
+  margin: 60px auto;
+  padding: 40px;
+  background: #fff;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  gap: 30px;
 }
 
-/* TITLE & AUTHOR */
-.book-title {
-  text-align: center;
-  color: #002b7a;
-  font-size: 28px;
-  margin-bottom: 10px;
+/* BAGIAN KIRI */
+.detail-left {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
 }
 
-.book-author {
-  text-align: center;
-  font-size: 16px;
-  margin-bottom: 20px;
-}
-
-/* COVER SECTION */
 .book-cover-section {
+  width: 100%;
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
 }
 
 .book-cover {
-  width: 200px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 220px;
+  border-radius: 15px;
+  object-fit: cover;
+  background-color: #1c5092;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
-/* ABSTRACT */
-.book-abstract {
-  font-size: 16px;
+/* ISBN & AUTHORS */
+.book-isbn {
+  margin-top: 20px;
+  font-weight: 600;
+  color: #000;
+  text-align: center;
+}
+
+.book-authors {
+  margin-top: 15px;
+}
+
+.book-authors p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+/* GARIS PEMISAH */
+.detail-divider {
+  width: 2px;
+  background-color: #000;
+  height: auto;
+  align-self: stretch;
+}
+
+/* BAGIAN KANAN */
+.detail-right {
+  width: 68%;
+}
+
+.book-title {
+  color: #000;
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.book-abstract h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.book-abstract p {
+  font-size: 15px;
   line-height: 1.7;
-  color: #333;
-  margin-bottom: 30px;
   text-align: justify;
 }
 
-/* DOWNLOAD BUTTON SECTION */
+/* TOMBOL DOWNLOAD */
 .download-section {
-  margin-top: 30px;
+  margin-top: 25px;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
+  justify-content: flex-start;
+  gap: 15px;
 }
 
+.download-section .btn {
+  font-size: 14px;
+  padding: 10px 18px;
+  width: 20pc;
+}
+
+/* =========================================
+   BUTTON STYLING
+========================================= */
 .btn {
   background-color: #002b7a;
   color: white;
@@ -121,9 +177,6 @@ body {
   border-radius: 5px;
   font-size: 14px;
   transition: background-color 0.3s ease;
-  max-width: 300px;
-  width: 100%;
-  box-sizing: border-box;
   text-align: center;
 }
 
@@ -139,7 +192,9 @@ body {
   background-color: #003d80;
 }
 
-/* FOOTER */
+/* =========================================
+   FOOTER
+========================================= */
 .footer {
   background-color: #000;
   color: white;
@@ -201,8 +256,11 @@ body {
   color: #aaa;
 }
 
-/* RESPONSIVE TABLET & MOBILE */
+/* =========================================
+   RESPONSIVE TABLET & MOBILE
+========================================= */
 @media (max-width: 768px) {
+  /* NAVBAR */
   .navbar {
     flex-direction: column;
     align-items: flex-start;
@@ -230,37 +288,89 @@ body {
     display: block;
   }
 
+  /* DETAIL CONTAINER RESPONSIVE */
   .detail-container {
-    padding: 15px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 25px 15px;
     margin: 20px 10px;
   }
 
-  .book-title {
-    font-size: 22px;
+  .detail-divider {
+    display: none;
   }
 
-  .book-author {
-    font-size: 14px;
+  .detail-left,
+  .detail-right {
+    width: 100%;
+  }
+
+  /* Cover dan data di tengah */
+  .detail-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .book-cover-section {
+    justify-content: center;
+    margin-bottom: 15px;
   }
 
   .book-cover {
-    width: 150px;
+    max-width: 200px;
   }
 
-  .book-abstract {
+  .book-isbn {
+    margin-top: 15px;
+    font-size: 15px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .book-authors {
+    margin-top: 10px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .book-authors p {
+    font-size: 14px;
+    margin: 3px 0;
+  }
+
+  /* Judul & sinopsis */
+  .book-title {
+    text-align: center;
+    font-size: 22px;
+  }
+
+  .book-abstract h2 {
+    text-align: left;
+    font-size: 16px;
+    margin-top: 10px;
+  }
+
+  .book-abstract p {
     font-size: 14px;
     line-height: 1.6;
+    text-align: justify;
   }
 
+  /* Tombol */
   .download-section {
+    justify-content: center;
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    width: 100%;
   }
 
   .btn {
-    width: 100%;
-    max-width: 100%;
+    width: 90%;
     font-size: 15px;
   }
 }
@@ -271,15 +381,16 @@ body {
   }
 
   .book-cover {
-    width: 120px;
+    max-width: 160px;
   }
 
-  .book-abstract {
+  .book-abstract p {
     font-size: 13px;
   }
 
   .btn {
     font-size: 14px;
     padding: 10px;
+    width: 100%;
   }
 }
