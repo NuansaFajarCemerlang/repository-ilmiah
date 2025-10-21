@@ -115,11 +115,12 @@ h2 {
 
 /* Saat daftar diperluas */
 .author-list.expanded {
-  max-height: 1000px;
+  max-height: none !important; /* tampilkan seluruh isi */
+  overflow: visible !important; /* pastikan tidak dipotong */
 }
 
 .author-list.expanded::after {
-  display: none;
+  display: none; /* hilangkan efek gradasi */
 }
 
 /* Tombol 'selengkapnya' */
