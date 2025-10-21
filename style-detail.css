@@ -81,7 +81,7 @@ body {
 /* BAGIAN KIRI */
 .detail-left {
   width: 30%;
-  display: flex;
+  /* display: flex; */
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
