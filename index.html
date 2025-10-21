@@ -23,7 +23,7 @@
       <li><a href="#">Tentang Kami</a></li>
       <li><a href="#">Kontak</a></li>
       <li><a href="#daftar-artikel">Katalog Buku</a></li>
-      <li><a href="https://scholar.google.com/citations?user=HJh9up8AAAAJ&hl=id">Google Sholar</a></li>
+      <li><a href="https://scholar.google.com/citations?user=HJh9up8AAAAJ&hl=id">Google Scholar</a></li>
     </ul>
   </nav>
 
@@ -122,18 +122,16 @@
       const to = from + cardsPerPage - 1;
 
       let query;
-
       if (searchTerm.trim() !== "") {
-        // pencarian tetap dibatasi range
         query = supabaseClient
           .from("books")
-          .select("*", { count: "exact" }) // 
+          .select("*", { count: "exact" })
           .or(`judul.ilike.%${searchTerm}%,author.ilike.%${searchTerm}%`)
           .range(from, to);
       } else {
         query = supabaseClient
           .from("books")
-          .select("*", { count: "exact" }) 
+          .select("*", { count: "exact" })
           .range(from, to);
       }
 
@@ -144,28 +142,52 @@
         return;
       }
 
-      // Render cards
       const container = document.getElementById("card-container");
       container.innerHTML = "";
 
       data.forEach((book) => {
         const card = document.createElement("div");
         card.classList.add("card");
-        card.innerHTML = `
-      <img src="${book.cover_url}" alt="Cover ${book.judul}" class="cover-img" loading="lazy" />
-      <div class="card-content">
-        <h3>${book.judul}</h3>
-        <p><b>Oleh:</b> ${book.author}</p>
-        <a href="${book.detail_buku}" class="btn">Baca Detail</a>
-      </div>
-    `;
+
+        // --- BAGIAN CARD BARU ---
+        const authors = book.author
+          ? book.author.split(/\r?\n/).map(a => a.trim()).filter(a => a)
+          : [];
+
+        const hasMore = authors.length > 5;
+
+      card.innerHTML = `
+        <img src="${book.cover_url}" alt="Cover ${book.judul}" class="cover-img" loading="lazy" />
+        <div class="card-content">
+          <h3>${book.judul}</h3>
+          <b>Oleh:</b>
+          <div class="author-list ${hasMore ? "gradient" : ""}" id="author-list-${book.id}">
+            ${authors.map(a => `<div>${a}</div>`).join("")}
+          </div>
+          ${hasMore ? `<span class="toggle-authors" data-id="${book.id}">selengkapnya ▼</span>` : ""}
+          <a href="${book.detail_buku}" class="btn">Baca Detail</a>
+        </div>
+      `;
+
+
         container.appendChild(card);
       });
 
+      // Event listener tombol selengkapnya
+      setTimeout(() => {
+        document.querySelectorAll(".toggle-authors").forEach(btn => {
+          btn.onclick = () => {
+            const id = btn.getAttribute("data-id");
+            const list = document.getElementById(`author-list-${id}`);
+            const expanded = list.classList.toggle("expanded");
+            btn.textContent = expanded ? "sembunyikan ▲" : "selengkapnya ▼";
+          };
+        });
+      }, 100);
+
       currentPage = page;
       currentSearchTerm = searchTerm;
-
-      renderPagination(count); 
+      renderPagination(count);
     }
 
     function renderPagination(totalItems) {
@@ -271,13 +293,9 @@
       loadBooks();
     };
 
-  </script>
-
-  <!-- SCRIPT NAVBAR DROPDOWN -->
-  <script>
+    // Navbar toggle
     const toggle = document.getElementById("menu-toggle");
     const navLinks = document.getElementById("nav-links");
-
     toggle.addEventListener("click", () => {
       navLinks.classList.toggle("show");
     });

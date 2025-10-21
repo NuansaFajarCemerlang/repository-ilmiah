@@ -1,4 +1,4 @@
-/* RESET DASAR */
+/* RESET */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -17,18 +17,9 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
   background-image: linear-gradient(270deg, #0f2027 0%, #1c5092 100%);
   padding: 10px 20px;
   color: white;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: bold;
-  font-size: 18px;
 }
 
 .logo-img {
@@ -40,23 +31,19 @@ body {
   list-style: none;
   display: flex;
   gap: 15px;
-  flex-wrap: wrap;
 }
 
-.nav-links li a {
+.nav-links a {
   color: white;
   text-decoration: none;
   font-size: 14px;
 }
 
-/* HERO SECTION */
+/* HERO */
 .hero {
-  background: linear-gradient(
-      rgba(31, 154, 255, 0.663),
-      rgba(42, 149, 255, 0.679)
-    ),
+  background: linear-gradient(rgba(31, 154, 255, 0.663), rgba(42, 149, 255, 0.679)),
     url("img/bg.jpg") no-repeat center center/cover;
-  color: rgb(255, 255, 255);
+  color: #fff;
   padding: 200px 20px;
   text-align: center;
 }
@@ -89,7 +76,6 @@ h2 {
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
   display: flex;
   gap: 20px;
   align-items: flex-start;
@@ -98,8 +84,6 @@ h2 {
 
 .cover-img {
   width: 120px;
-  height: auto;
-  object-fit: cover;
   border-radius: 5px;
   flex-shrink: 0;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
@@ -110,7 +94,52 @@ h2 {
   min-width: 200px;
 }
 
-/* BUTTON */
+/* AUTHOR LIST */
+.author-list {
+  max-height: 110px;
+  overflow: hidden;
+  position: relative;
+  transition: max-height 0.4s ease;
+}
+
+/* Efek gradasi putih hanya untuk daftar dengan >5 author */
+.author-list.gradient::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30px;
+  background: linear-gradient(to top, white, transparent);
+}
+
+/* Saat daftar diperluas */
+.author-list.expanded {
+  max-height: 1000px;
+}
+
+.author-list.expanded::after {
+  display: none;
+}
+
+/* Tombol 'selengkapnya' */
+.toggle-authors {
+  display: block;
+  /* agar tampil di baris sendiri */
+  margin-top: 6px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  color: #007bff;
+  user-select: none;
+  font-weight: 500;
+  text-align: left;
+}
+
+.toggle-authors:hover {
+  text-decoration: underline;
+}
+
+/* Tombol Baca Detail */
 .btn {
   display: inline-block;
   background-color: #002b7a;
@@ -118,12 +147,48 @@ h2 {
   padding: 10px 15px;
   text-decoration: none;
   border-radius: 5px;
-  margin-top: 10px;
+  margin-top: 5px;
   font-size: 14px;
 }
 
 .btn-secondary {
   background-color: #0056b3;
+}
+
+/* SEARCH + PAGINATION */
+.search-box {
+  width: 100%;
+  max-width: 400px;
+  margin: 20px auto;
+  display: block;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  margin: 3px;
+  padding: 6px 12px;
+  border: none;
+  background-color: #1c5092;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.pagination button:hover {
+  background-color: #5e7bb1;
+}
+
+.pagination button.active {
+  background-color: #002b7a;
+  font-weight: bold;
 }
 
 /* FOOTER */
@@ -163,7 +228,6 @@ h2 {
 
 .footer-section ul {
   list-style: none;
-  padding: 0;
 }
 
 .footer-section ul li {
@@ -178,6 +242,7 @@ h2 {
 .footer-section ul li a:hover {
   text-decoration: underline;
 }
+
 .footer-bottom {
   text-align: center;
   border-top: 1px solid #444;
@@ -185,11 +250,6 @@ h2 {
   padding-top: 15px;
   font-size: 13px;
   color: #aaa;
-}
-
-.social-icons a img {
-  width: 32px;
-  margin-right: 10px;
 }
 
 .subscribe-form {
@@ -213,8 +273,22 @@ h2 {
   cursor: pointer;
 }
 
-/* RESPONSIVE MOBILE */
+/* RESPONSIVE */
+.menu-toggle {
+  font-size: 24px;
+  cursor: pointer;
+  display: none;
+  color: white;
+  position: absolute;
+  right: 20px;
+  top: 20px;
+}
+
 @media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
   .navbar {
     flex-direction: column;
     align-items: flex-start;
@@ -226,21 +300,15 @@ h2 {
     width: 100%;
     background-color: #1d4f90;
     padding: 10px 0;
-    margin-top: 10px;
   }
+
   .nav-links.show {
     display: flex;
   }
+
   .nav-links li {
     text-align: center;
     padding: 10px 0;
-  }
-  .nav-links a {
-    display: block;
-    width: 100%;
-  }
-  .hero h1 {
-    font-size: 1.8rem;
   }
 
   .card {
@@ -255,53 +323,7 @@ h2 {
     height: auto;
   }
 
-  .card-content {
-    width: 100%;
-  }
-}
-.search-box {
-  width: 100%;
-  max-width: 400px;
-  margin: 20px auto;
-  display: block;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
-}
-.pagination {
-  text-align: center;
-  margin-top: 20px;
-}
-.pagination button {
-  margin: 3px;
-  padding: 6px 12px;
-  border: none;
-  background-color: #1c5092;
-  color: white;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.3s;
-}
-.pagination button:hover {
-  background-color: #5e7bb1;
-}
-.pagination button.active {
-  background-color: #002b7a;
-  font-weight: bold;
-}
-.menu-toggle {
-  font-size: 24px;
-  cursor: pointer;
-  display: none;
-  color: white;
-  position: absolute;
-  right: 20px;
-  top: 20px;
-  z-index: 1001;
-}
-@media (max-width: 768px) {
-  .menu-toggle {
-    display: block;
+  .toggle-authors {
+    text-align: center;
   }
 }
