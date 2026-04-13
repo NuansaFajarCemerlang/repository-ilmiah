@@ -32,7 +32,8 @@
     <div class="hero-content">
       <h1>Temukan Wawasan Baru Lewat Koleksi Terbaik</h1>
       <p>
-        Dukung perjalanan intelektual Anda dengan buku-buku pilihan dari Nuansa Fajar Cemerlang, tersedia dalam format digital dan cetak.
+        Dukung perjalanan intelektual Anda dengan buku-buku pilihan dari Nuansa Fajar Cemerlang, tersedia dalam format
+        digital dan cetak.
       </p>
       <div class="hero-buttons">
         <a href="#daftar-artikel" class="btn btn-primary">Eksplorasi Katalog</a>
@@ -48,14 +49,14 @@
       <input type="text" id="searchInput" placeholder="Cari judul buku atau nama penulis..." class="search-box"
         onkeyup="filterBooks()" />
     </div>
-    
+
     <div id="card-container">
       <div style="text-align: center; grid-column: 1/-1;">
         <div class="loader"></div>
         <p>Menghubungkan ke database...</p>
       </div>
     </div>
-    
+
     <div id="pagination" class="pagination"></div>
   </section>
 
@@ -63,9 +64,11 @@
   <footer class="footer">
     <div class="footer-container">
       <div class="footer-section about">
-        <img src="img/logo.png" alt="Nuansa Fajar Cemerlang" class="footer-logo" style="height: 40px; margin-bottom: 1.5rem;" />
+        <img src="img/logo.png" alt="Nuansa Fajar Cemerlang" class="footer-logo"
+          style="height: 40px; margin-bottom: 1.5rem;" />
         <p>
-          Nuansa Fajar Cemerlang menyajikan produk pendidikan berbasis digital untuk mendukung efektivitas belajar-mengajar melalui media online.
+          Nuansa Fajar Cemerlang menyajikan produk pendidikan berbasis digital untuk mendukung efektivitas
+          belajar-mengajar melalui media online.
         </p>
       </div>
       <div class="footer-section links">
@@ -132,9 +135,16 @@
         .select("*", { count: "exact" });
 
       if (searchTerm.trim() !== "") {
-        query = query.or(`judul.ilike.%${searchTerm}%,author.ilike.%${searchTerm}%`);
+        const cleanSearch = searchTerm.trim().replace(/[^\w\s]/gi, ' ').replace(/\s+/g, ' ');
+        const keywords = cleanSearch.split(' ').filter(k => k.length > 0);
+
+        if (keywords.length > 0) {
+          keywords.forEach(word => {
+            query = query.or(`judul.ilike.%${word}%,author.ilike.%${word}%`);
+          });
+        }
       }
-      
+
       query = query.range(from, to).order('created_at', { ascending: false });
 
       const { data, error, count } = await query;
@@ -283,7 +293,7 @@
     const navLinks = document.getElementById("nav-links");
     toggle.addEventListener("click", () => {
       const isShowing = navLinks.classList.toggle("show");
-      if(isShowing) {
+      if (isShowing) {
         navLinks.style.display = "flex";
         navLinks.style.flexDirection = "column";
         navLinks.style.position = "absolute";
