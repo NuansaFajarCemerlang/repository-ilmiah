@@ -166,7 +166,7 @@
           ? book.author.split(/\r?\n/).map(a => a.trim()).filter(a => a)
           : [];
 
-        const hasMore = authors.length > 5;
+        const hasMore = authors.length > 3;
 
         card.innerHTML = `
           <div class="cover-container">
