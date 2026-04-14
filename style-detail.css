@@ -81,7 +81,7 @@ body {
 ========================================= */
 .detail-container {
   display: flex;
-  max-width: 1100px;
+  max-width: 1400px;
   margin: 4rem auto;
   padding: 3rem;
   background: var(--card-bg);
