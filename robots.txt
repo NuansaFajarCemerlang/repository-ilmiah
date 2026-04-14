@@ -1,3 +1,7 @@
 User-agent: *
 Allow: /
+
+User-agent: Googlebot-Scholar
+Allow: /
+
 Sitemap: https://nuansafajarcemerlang.github.io/repository-ilmiah/sitemap.xml
